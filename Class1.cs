@@ -81,16 +81,14 @@ namespace oni_mod_test
                 if (fld != null)
                 {
  
-                    GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State charging =
-                        (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)
-                        fld.GetValue(__instance);
-                   // smi.GoTo( charging);
+                    var charging = (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)fld.GetValue(__instance);
+                  
                     smi.GoTo((StateMachine.BaseState)check_fld.GetValue(__instance));
 
                     //添加触发器.满了进入ready状态.
-                    var ready =ready_fld.GetValue(__instance);
-                     charging.EventTransition(GameHashes.OnParticleStorageChanged,
-                         (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)ready,
+                    var ready = (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)ready_fld.GetValue(__instance);
+                  /*  ready.EventTransition(GameHashes.OnParticleStorageChanged,
+                       ready,
                          delegate (TemporalTearOpener.Instance smi2)  {
                              //直接触发陨石,如果满的话.
                              HighEnergyParticleStorage highEnergyParticleStorage = smi2.GetComponent<HighEnergyParticleStorage>();
@@ -105,13 +103,13 @@ namespace oni_mod_test
 
                              return false;
                         });
-                     
+                     */
                 }
                 /*                fld = typeof(TemporalTearOpener).GetField("check_requirements"); //转检查器.
                                 if (fld != null)
                                 {
                                     var check_requirements = fld.GetValue(__instance);
-                                    smi.GoTo((StateMachine.BaseState)check_requirements);
+                                    smi.GoTo((StateMachine.BaseState)check_requirements);//进入初始状态.
                                 }*/
             }).PlayAnim("off");//重新重置动画.
         
@@ -119,14 +117,31 @@ namespace oni_mod_test
 
     }
 
-    [HarmonyPatch(typeof(ClusterPOIManager))]
-    public class CLSPatch
+    [HarmonyPatch(typeof(TemporalTearOpener.Instance))]
+    public class SidescreenEnabledPatch
     {
-        [HarmonyPatch("OpenTemporalTear")]
-        public static void Postfix(ClusterPOIManager __instance)
+        [HarmonyPatch("SidescreenEnabled")]
+        public static bool Postfix(bool __result, TemporalTearOpener.Instance __instance)
         {
             //  __instance.m
+            if (__instance.GetComponent<HighEnergyParticleStorage>().IsFull())
+                __result= true;
+            //强制显示菜单
+            return __result;
+        }
 
+    }
+    [HarmonyPatch(typeof(TemporalTearOpener.Instance))]
+    public class SidescreenButtonInteractablePatch
+    {
+        [HarmonyPatch("SidescreenButtonInteractable")]
+        public static bool Postfix(bool __result, TemporalTearOpener.Instance __instance)
+        {
+            //  __instance.m
+            if (__instance.GetComponent<HighEnergyParticleStorage>().IsFull())
+                __result = true;
+            //强制显示菜单,强制让按钮可点击.
+            return __result;
         }
 
     }
