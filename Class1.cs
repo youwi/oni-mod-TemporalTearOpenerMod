@@ -75,13 +75,17 @@ namespace oni_mod_test
                 smi.UpdateMeter();
                 FieldInfo fld = typeof(TemporalTearOpener).GetField("charging"); //初始化
                 FieldInfo ready_fld = typeof(TemporalTearOpener).GetField("ready"); //初始化
+                FieldInfo check_fld = typeof(TemporalTearOpener).GetField("check_requirements"); //初始化
+
+                //check_requirements
                 if (fld != null)
                 {
  
                     GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State charging =
                         (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)
                         fld.GetValue(__instance);
-                    smi.GoTo( charging);
+                   // smi.GoTo( charging);
+                    smi.GoTo((StateMachine.BaseState)check_fld.GetValue(__instance));
 
                     //添加触发器.满了进入ready状态.
                     var ready =ready_fld.GetValue(__instance);
