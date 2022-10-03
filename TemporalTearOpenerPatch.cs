@@ -60,10 +60,10 @@ namespace oni_mod_test
   
         }
     }
-    [HarmonyPatch(typeof(TemporalTearOpener))]
+   // [HarmonyPatch(typeof(TemporalTearOpener))]
     public class TemporalTearOpenerInitPatch
     {
-        [HarmonyPatch("InitializeStates")]
+   //     [HarmonyPatch("InitializeStates")]
 
         public static void Postfix(TemporalTearOpener __instance)
         {
@@ -72,7 +72,7 @@ namespace oni_mod_test
             __instance.root.Enter(delegate (TemporalTearOpener.Instance smi)
             {
 
-                smi.UpdateMeter();
+              //  smi.UpdateMeter();
                 FieldInfo fld = typeof(TemporalTearOpener).GetField("charging"); //初始化
                 FieldInfo ready_fld = typeof(TemporalTearOpener).GetField("ready"); //初始化
                 FieldInfo check_fld = typeof(TemporalTearOpener).GetField("check_requirements"); //初始化
@@ -83,7 +83,7 @@ namespace oni_mod_test
  
                     var charging = (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)fld.GetValue(__instance);
                   
-                    smi.GoTo((StateMachine.BaseState)check_fld.GetValue(__instance));
+                 //   smi.GoTo((StateMachine.BaseState)check_fld.GetValue(__instance));
 
                     //添加触发器.满了进入ready状态.
                     var ready = (GameStateMachine<TemporalTearOpener, TemporalTearOpener.Instance, IStateMachineTarget, TemporalTearOpener.Def>.State)ready_fld.GetValue(__instance);
@@ -174,7 +174,7 @@ namespace oni_mod_test
         private static void Prefix()
         {
 
-            ModUtil.AddBuildingToPlanScreen("Refining", "TemporalTearOpener");
+            ModUtil.AddBuildingToPlanScreen("Base", "TemporalTearOpener");
         }
 
     }
